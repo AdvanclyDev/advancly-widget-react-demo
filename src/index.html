@@ -1,0 +1,96 @@
+<html>
+  <head>
+    <title>Advancly Widget</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .advancly {
+        border: none;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- You can style this button however you want -->
+    <button type="button" onclick="openWidget()" id="advancly-button">
+      Request Loan
+    </button>
+
+    <script>
+      const msgToPost = {
+        aggregator_id: 29, // Test ID for Paelyt
+        bank_account_number: "3055662696",
+        bank_code: "011",
+        borrower_phone: "08141200649",
+        // bvn_number: "22167382780",
+        bvn_number: "22247846872",
+        aggregator_loan_ref: Date.now().toString(),
+        cac_number: "2366664",
+        city: "Mubuntu",
+        company_name: "HAIRTOPIA EX PARTE",
+        customer_type: "1", // 1 is individual, 2 is corporate
+        email: "gbengacodes@gmail.com",
+        first_name: "Gbenga",
+        gender: "male",
+        last_name: "Olufeyimi",
+        photo_url: null,
+        public_key: "AYAyAToX8gZQKJwX", // For Paelyt on test1
+        // public_key: "x2w99PjBj8bi2reK", // For Paelyt on test2
+        residence_address: "80 Bola Street Ebute Metta",
+        state: "Lagos",
+        amount: 5000, // Loan Amount
+        product_id: 53, // Id of Loan Product
+        product_code: "C044", // Code of Loan Product
+        tenure: 30, // Loan Tenure in days
+        customStyles: {
+          buttonBackgroundColor: "#377dff", // Can be string or the color code
+          buttonTextColor: "#fff", // Can be string or the color code
+          acceptButtonBackgroundColor: "#377dff", // Can be string or the color code
+          acceptButtonTextColor: "#fff", // Can be string or the color code
+          declineButtonBackgroundColor: "#377dff", // Can be string or the color code
+          declineButtonTextColor: "#fff", // Can be string or the color code
+          dropdownTextColor: "#000", // Can be string or the color code
+          dropdownBackgroundColor: "#fff", // Can be string or the color code
+        },
+      };
+
+      const widgetUrl = `http://localhost:3000/create-loan-account`;
+
+      // const widgetUrl = `https://advancly-borrower.test.vggdev.com/create-loan-account?message=${JSON.stringify(
+      //   msgToPost
+      // )}`;
+
+      function openWidget() {
+        document.getElementById("advancly-button").style.display = "none";
+        let iframe = document.createElement("iframe");
+        iframe.setAttribute("class", "advancly");
+        iframe.src = widgetUrl;
+        document.body.appendChild(iframe);
+
+        function closeWidget() {
+          iframe.remove();
+        }
+
+        // Listen to response from the widget
+        window.addEventListener("message", function (e) {
+          if (e.data.status === "success") {
+            // closeWidget(); // Closing the iframe on success response
+            console.log(e.data); // Log response from the widget
+          }
+          if (e.data.status === "cancel") {
+            document.getElementById("advancly-button").style.display = "block";
+            closeWidget();
+          }
+        });
+
+        iframe.onload = function () {
+          iframe.contentWindow.postMessage(msgToPost, widgetUrl);
+        };
+      }
+
+      window.openWidget = openWidget;
+    </script>
+  </body>
+</html>
